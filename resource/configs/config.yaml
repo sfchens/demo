@@ -1,0 +1,53 @@
+system:
+  env: 'prod'
+  port: 8080
+  use-cron-job: false
+
+mysql:
+  path: 127.0.0.1
+  port: 3306
+  config: charset=utf8mb4&parseTime=True&loc=Local
+  db-name: demo
+  username: root
+  password: root
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: error
+  log-zap: false
+  db-type: 'mysql'
+
+zap:
+  # 日志级别
+  level: 'info'
+  format: 'console'
+  prefix: '[demo]'
+  director: 'storage/logs'
+  link-name: 'latest_log'
+  show-line: true
+  encode-level: 'LowercaseLevelEncoder'
+  stacktrace-key: 'stacktrace'
+  log-in-console: true
+
+jwt:
+  # jwt的签名
+  signing-key: 'demo'
+  # 过期时间
+  expires-time: 604800
+  # 缓冲时间（过期前这段时间内有过请求会刷新jwt续期）
+  buffer-time: 86400
+  # jwt签发者
+  issuer: 'demo'
+
+redis:
+  # redis的哪个数据库
+  db: 0
+  # 服务器地址:端口
+  addr: '10.1.16.35:6379'
+  # 密码
+  password: 'zzPn7Xj6cN9KDU5pSYXU'
+  # 用户名
+  username: ''
+  # 前缀
+  prefix: 'apm-app-demo'
+  # 过期时间-单位天
+  lifetime: 7

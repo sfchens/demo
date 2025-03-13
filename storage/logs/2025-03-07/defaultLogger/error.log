@@ -1,0 +1,11 @@
+[demo]2025/03/07 - 15:24:27.262	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/routes.go:49	accept tcp [::]:8080: use of closed network connection
+[demo]2025/03/07 - 15:46:01.811	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/routes.go:45	accept tcp [::]:8080: use of closed network connection
+[demo]2025/03/07 - 15:50:56.133	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/cache.go:40	redis connection ping failed, err:	{"error": "dial tcp 10.1.16.35:6379: i/o timeout"}
+[demo]2025/03/07 - 15:51:26.636	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/routes.go:45	accept tcp [::]:8080: use of closed network connection
+[demo]2025/03/07 - 15:51:49.264	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/cache.go:40	redis connection ping failed, err:	{"error": "dial tcp 10.1.16.35:6379: i/o timeout"}
+[demo]2025/03/07 - 16:12:14.924	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/routes.go:45	accept tcp [::]:8080: use of closed network connection
+[demo]2025/03/07 - 16:13:19.426	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/cache.go:40	redis connection ping failed, err:	{"error": "dial tcp 10.1.16.35:6379: i/o timeout"}
+[demo]2025/03/07 - 17:12:01.516	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/routes.go:45	accept tcp [::]:8080: use of closed network connection
+[demo]2025/03/07 - 17:19:06.224	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/cache.go:40	redis connection ping failed, err:	{"error": "dial tcp 10.1.16.35:6379: i/o timeout"}
+[demo]2025/03/07 - 17:31:16.725	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/routes.go:45	accept tcp [::]:8080: use of closed network connection
+[demo]2025/03/07 - 17:33:50.877	error	D:/phpstudy_pro/WWW/goProject/demo/core/initialize/cache.go:40	redis connection ping failed, err:	{"error": "dial tcp 10.1.16.35:6379: i/o timeout"}
