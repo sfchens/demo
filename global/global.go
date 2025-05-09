@@ -1,6 +1,7 @@
 package global
 
 import (
+	"github.com/casbin/casbin/v2"
 	"github.com/go-redis/redis/v8"
 	"github.com/robfig/cron/v3"
 	"github.com/songzhibin97/gkit/cache/local_cache"
@@ -16,4 +17,5 @@ var (
 	LocalCache         local_cache.Cache
 	Redis              *redis.Client
 	ConcurrencyControl = &singleflight.Group{}
+	Casbin             *casbin.SyncedEnforcer
 )

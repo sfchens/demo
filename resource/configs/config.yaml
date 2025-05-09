@@ -1,13 +1,14 @@
 system:
-  env: 'prod'
+  env: 'dev'
   port: 8080
   use-cron-job: false
+  use-cors: true
 
 mysql:
   path: 127.0.0.1
   port: 3306
   config: charset=utf8mb4&parseTime=True&loc=Local
-  db-name: demo
+  db-name: greasyx-admin
   username: root
   password: root
   max-idle-conns: 10

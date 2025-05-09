@@ -14,10 +14,8 @@ type Response struct {
 
 const (
 	ERROR        = 7
-	SUCCESS      = 0
+	SUCCESS      = 200
 	Unauthorized = 401 // Unauthorized
-
-	OkSuccess = 200
 
 	InvalidParameter = 40001 // invalid argument
 	MissingParameter = 40002 // 缺失参数
@@ -40,157 +38,153 @@ const (
 	InvalidRecord            = 50101 // 有问题的数据
 )
 
-func Result(code int, data interface{}, msg string, c *gin.Context) {
+func Result(ctx *gin.Context, code int, data interface{}, msg string) {
 	// 开始时间
-	c.JSON(http.StatusOK, Response{
+	ctx.JSON(http.StatusOK, Response{
 		code,
 		data,
 		msg,
 	})
 }
 
-func Ok(c *gin.Context) {
-	Result(SUCCESS, map[string]interface{}{}, "操作成功", c)
+func Ok(ctx *gin.Context) {
+	Result(ctx, SUCCESS, map[string]interface{}{}, "操作成功")
 }
 
-func OkWithMessage(message string, c *gin.Context) {
-	Result(SUCCESS, map[string]interface{}{}, message, c)
+func OkWithMessage(ctx *gin.Context, message string) {
+	Result(ctx, SUCCESS, map[string]interface{}{}, message)
 }
 
-func OkWithData(data interface{}, c *gin.Context) {
-	Result(SUCCESS, data, "操作成功", c)
+func OkWithData(ctx *gin.Context, data interface{}) {
+	Result(ctx, SUCCESS, data, "操作成功")
 }
 
-func OkWithDetailed(data interface{}, message string, c *gin.Context) {
-	Result(SUCCESS, data, message, c)
+func OkWithDetailed(ctx *gin.Context, data interface{}, message string) {
+	Result(ctx, SUCCESS, data, message)
 }
 
-func Fail(c *gin.Context) {
-	Result(ERROR, map[string]interface{}{}, "操作失败", c)
+func Fail(ctx *gin.Context) {
+	Result(ctx, ERROR, map[string]interface{}{}, "操作失败")
 }
 
-func FailWithMessage(message string, c *gin.Context) {
-	Result(ERROR, map[string]interface{}{}, message, c)
+func FailWithMessage(ctx *gin.Context, message string) {
+	Result(ctx, ERROR, map[string]interface{}{}, message)
 }
 
-func FailWithDetailed(data interface{}, message string, c *gin.Context) {
-	Result(ERROR, data, message, c)
+func FailWithDetailed(ctx *gin.Context, data interface{}, message string) {
+	Result(ctx, ERROR, data, message)
 }
 
-func FailWithCode(code int, msg string, c *gin.Context) {
-	Result(code, nil, msg, c)
+func FailWithCode(ctx *gin.Context, code int, msg string) {
+	Result(ctx, code, nil, msg)
 }
 
-func UnauthorizedWithDetailed(data interface{}, message string, c *gin.Context) {
-	Result(Unauthorized, data, message, c)
+func UnauthorizedWithDetailed(ctx *gin.Context, data interface{}, message string) {
+	Result(ctx, Unauthorized, data, message)
 }
 
-func ErrorPage(status int, msg string, c *gin.Context) {
-	c.HTML(http.StatusOK, "error.html", gin.H{
+func ErrorPage(ctx *gin.Context, status int, msg string) {
+	ctx.HTML(http.StatusOK, "error.html", gin.H{
 		"status":  status,
 		"message": msg,
 	})
 }
 
-func OkSuccessWithData(data interface{}, c *gin.Context) {
-	Result(OkSuccess, data, "操作成功", c)
+func Redirect(ctx *gin.Context, location string) {
+	ctx.Redirect(http.StatusFound, location)
 }
 
-func Redirect(location string, c *gin.Context) {
-	c.Redirect(http.StatusFound, location)
+func FailAsUnauthorized(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, Unauthorized, data, msg)
 }
 
-func FailAsUnauthorized(data interface{}, msg string, c *gin.Context) {
-	Result(Unauthorized, data, msg, c)
+func FailWithNotFound(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, NotFound, data, msg)
 }
 
-func FailWithNotFound(data interface{}, msg string, c *gin.Context) {
-	Result(NotFound, data, msg, c)
+func FailAorbiddensF(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, Forbidden, data, msg)
 }
 
-func FailAorbiddensF(data interface{}, msg string, c *gin.Context) {
-	Result(Forbidden, data, msg, c)
+func FailInvalidParameter(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, InvalidParameter, data, msg)
 }
 
-func FailInvalidParameter(data interface{}, msg string, c *gin.Context) {
-	Result(InvalidParameter, data, msg, c)
+func FailWithMissingParameter(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, MissingParameter, data, msg)
 }
 
-func FailWithMissingParameter(data interface{}, msg string, c *gin.Context) {
-	Result(MissingParameter, data, msg, c)
+func FailWithInternalServerError(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, InternalServerError, data, msg)
 }
 
-func FailWithInternalServerError(data interface{}, msg string, c *gin.Context) {
-	Result(InternalServerError, data, msg, c)
+func FailWithRecordExpired(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, RecordExpired, data, msg)
 }
 
-func FailWithRecordExpired(data interface{}, msg string, c *gin.Context) {
-	Result(RecordExpired, data, msg, c)
+func FailWithDuplicate(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, Duplicate, data, msg)
 }
 
-func FailWithDuplicate(data interface{}, msg string, c *gin.Context) {
-	Result(Duplicate, data, msg, c)
+func FailWithFetchResultError(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, FetchResultError, data, msg)
 }
 
-func FailWithFetchResultError(data interface{}, msg string, c *gin.Context) {
-	Result(FetchResultError, data, msg, c)
+func FailWithInvalidRecordError(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, InvalidRecord, data, msg)
 }
 
-func FailWithInvalidRecordError(data interface{}, msg string, c *gin.Context) {
-	Result(InvalidRecord, data, msg, c)
+func FailWithBadParameter(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, BadParameter, data, msg)
 }
 
-func FailWithBadParameter(data interface{}, msg string, c *gin.Context) {
-	Result(BadParameter, data, msg, c)
+func FailWithBalanceNotEnough(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, BalanceNotEnough, data, msg)
 }
 
-func FailWithBalanceNotEnough(data interface{}, msg string, c *gin.Context) {
-	Result(BalanceNotEnough, data, msg, c)
+func FailSectionWithData(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, FailSection, data, msg)
 }
 
-func FailSectionWithData(data interface{}, msg string, c *gin.Context) {
-	Result(FailSection, data, msg, c)
+func BadRequestWithData(ctx *gin.Context, data interface{}, msg string) {
+	Result(ctx, BadRequest, data, msg)
 }
 
-func BadRequestWithData(data interface{}, msg string, c *gin.Context) {
-	Result(BadRequest, data, msg, c)
-}
-
-func FailWithDataByCode(code int, msg string, data interface{}, c *gin.Context) {
+func FailWithDataByCode(ctx *gin.Context, code int, msg string, data interface{}) {
 	switch code {
 	case Unauthorized:
-		UnauthorizedWithDetailed(data, msg, c)
+		UnauthorizedWithDetailed(ctx, data, msg)
 	case InvalidParameter:
-		FailInvalidParameter(data, msg, c)
+		FailInvalidParameter(ctx, data, msg)
 	case MissingParameter:
-		FailWithMissingParameter(data, msg, c)
+		FailWithMissingParameter(ctx, data, msg)
 	case FailSection:
-		FailSectionWithData(data, msg, c)
+		FailSectionWithData(ctx, data, msg)
 	case Forbidden:
-		FailAorbiddensF(data, msg, c)
+		FailAorbiddensF(ctx, data, msg)
 	case NotFound:
-		FailWithNotFound(data, msg, c)
+		FailWithNotFound(ctx, data, msg)
 	case RecordExpired:
-		FailWithRecordExpired(data, msg, c)
+		FailWithRecordExpired(ctx, data, msg)
 	case Duplicate:
-		FailWithDuplicate(data, msg, c)
+		FailWithDuplicate(ctx, data, msg)
 	case BadParameter:
-		FailWithBadParameter(data, msg, c)
+		FailWithBadParameter(ctx, data, msg)
 	case BalanceNotEnough:
-		FailWithBalanceNotEnough(data, msg, c)
+		FailWithBalanceNotEnough(ctx, data, msg)
 	case InternalServerError:
-		FailWithInternalServerError(data, msg, c)
+		FailWithInternalServerError(ctx, data, msg)
 	case FetchResultError:
-		FailWithFetchResultError(data, msg, c)
+		FailWithFetchResultError(ctx, data, msg)
 	case InvalidRecord:
-		FailWithInvalidRecordError(data, msg, c)
+		FailWithInvalidRecordError(ctx, data, msg)
 	case BadRequest:
-		BadRequestWithData(data, msg, c)
+		BadRequestWithData(ctx, data, msg)
 	default:
-		Result(code, data, msg, c)
+		Result(ctx, code, data, msg)
 	}
 }
 
-func FailByCode(code int, msg string, c *gin.Context) {
-	FailWithDataByCode(code, msg, "", c)
+func FailByCode(ctx *gin.Context, code int, msg string) {
+	FailWithDataByCode(ctx, code, msg, "")
 }
