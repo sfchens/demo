@@ -5,13 +5,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var userApi = system_controller.NewUserApi()
+
 func InitUserRouter(routerGroup *gin.RouterGroup) {
 	systemUserGroup := routerGroup.Group("/user")
 	{
-		systemUserGroup.GET("/info", system_controller.UserInfo)
-		systemUserGroup.POST("/add", system_controller.UserAdd)
-		systemUserGroup.GET("/list", system_controller.UserList)
-		systemUserGroup.PUT("/update/:id", system_controller.UserUpdate)
-		systemUserGroup.DELETE("/delete/:id", system_controller.UserDelete)
+		systemUserGroup.GET("/info", userApi.UserInfo)
+		systemUserGroup.POST("/add", userApi.UserAdd)
+		systemUserGroup.GET("/list", userApi.UserList)
+		systemUserGroup.PUT("/update/:id", userApi.UserUpdate)
+		systemUserGroup.DELETE("/delete/:id", userApi.UserDelete)
 	}
 }

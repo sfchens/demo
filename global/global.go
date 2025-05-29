@@ -12,7 +12,7 @@ import (
 
 var (
 	Logger             = make(map[string]*zap.Logger)
-	DB                 *gorm.DB
+	MysqlDB            *gorm.DB
 	Cron               *cron.Cron
 	LocalCache         local_cache.Cache
 	Redis              *redis.Client

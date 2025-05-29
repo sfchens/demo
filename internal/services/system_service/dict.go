@@ -19,7 +19,7 @@ func NewDictLogic() *DictLogic {
 func (self *DictLogic) Add(ctx context.Context, params *request.UpsertDictReq) (err error) {
 	data := new(models.SysDicts)
 	_ = copier.Copy(data, params)
-	err = global.DB.Model(&models.SysDicts{}).Create(data).Error
+	err = global.MysqlDB.Model(&models.SysDicts{}).Create(data).Error
 
 	return
 }
@@ -27,7 +27,7 @@ func (self *DictLogic) Add(ctx context.Context, params *request.UpsertDictReq) (
 func (self *DictLogic) List(ctx context.Context, params *request.DictListReq) (resp *request.DictListResp, err error) {
 	resp = &request.DictListResp{}
 
-	query := global.DB.Model(&models.SysDicts{}).Order("id desc")
+	query := global.MysqlDB.Model(&models.SysDicts{}).Order("id desc")
 	if params.DictName != "" {
 		query.Where("dict_name like ?", params.DictName+"%")
 	}
@@ -59,7 +59,7 @@ func (self *DictLogic) List(ctx context.Context, params *request.DictListReq) (r
 }
 
 func (self *DictLogic) Update(ctx context.Context, id int64, params *request.UpsertDictReq) (err error) {
-	err = global.DB.Model(&models.SysDicts{}).Where("id = ?", id).
+	err = global.MysqlDB.Model(&models.SysDicts{}).Where("id = ?", id).
 		Updates(map[string]interface{}{
 			"dict_name":  params.DictName,
 			"dict_type":  params.DictType,
@@ -74,7 +74,7 @@ func (self *DictLogic) Update(ctx context.Context, id int64, params *request.Ups
 }
 
 func (self *DictLogic) Delete(ctx context.Context, id int64) (err error) {
-	err = global.DB.Delete(&models.SysDicts{}, "id = ?", id).Error
+	err = global.MysqlDB.Delete(&models.SysDicts{}, "id = ?", id).Error
 
 	return
 }

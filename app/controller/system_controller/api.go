@@ -8,7 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ApiAdd(ctx *gin.Context) {
+type ApiApi struct{}
+
+func NewApiApi() *ApiApi {
+	return &ApiApi{}
+}
+
+func (c *ApiApi) ApiAdd(ctx *gin.Context) {
 	var req request.UpsertApiReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -22,7 +28,7 @@ func ApiAdd(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func ApiList(ctx *gin.Context) {
+func (c *ApiApi) ApiList(ctx *gin.Context) {
 	var req request.ApiListReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -38,7 +44,7 @@ func ApiList(ctx *gin.Context) {
 	response.OkWithData(ctx, resp)
 }
 
-func ApiUpdate(ctx *gin.Context) {
+func (c *ApiApi) ApiUpdate(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")
@@ -57,7 +63,7 @@ func ApiUpdate(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func ApiDelete(ctx *gin.Context) {
+func (c *ApiApi) ApiDelete(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")

@@ -8,7 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserInfo(ctx *gin.Context) {
+type UserApi struct{}
+
+func NewUserApi() *UserApi {
+	return &UserApi{}
+}
+func (c *UserApi) UserInfo(ctx *gin.Context) {
 	resp, err := system_service.NewUserLogic().Info(ctx)
 	if err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -17,7 +22,7 @@ func UserInfo(ctx *gin.Context) {
 	response.OkWithData(ctx, resp)
 }
 
-func UserAdd(ctx *gin.Context) {
+func (c *UserApi) UserAdd(ctx *gin.Context) {
 	var req request.UpsertUserReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -32,7 +37,7 @@ func UserAdd(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func UserList(ctx *gin.Context) {
+func (c *UserApi) UserList(ctx *gin.Context) {
 	var req request.UserListReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -47,7 +52,7 @@ func UserList(ctx *gin.Context) {
 	response.OkWithData(ctx, resp)
 }
 
-func UserUpdate(ctx *gin.Context) {
+func (c *UserApi) UserUpdate(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")
@@ -67,7 +72,7 @@ func UserUpdate(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func UserDelete(ctx *gin.Context) {
+func (c *UserApi) UserDelete(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")

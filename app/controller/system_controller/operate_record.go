@@ -8,7 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RecordList(ctx *gin.Context) {
+type RecordApi struct{}
+
+func NewRecordApi() *RecordApi {
+	return &RecordApi{}
+}
+func (c *RecordApi) RecordList(ctx *gin.Context) {
 	var req request.RecordListReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -23,7 +28,7 @@ func RecordList(ctx *gin.Context) {
 	response.OkWithData(ctx, resp)
 }
 
-func RecordDelete(ctx *gin.Context) {
+func (c *RecordApi) RecordDelete(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")

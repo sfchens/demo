@@ -16,7 +16,7 @@ func NewJwtLogic() *JwtLogic {
 }
 
 func (JwtLogic *JwtLogic) JsonInBlackList(jwtList models.JwtBlackList) (err error) {
-	err = global.DB.Create(&jwtList).Error
+	err = global.MysqlDB.Create(&jwtList).Error
 	if err != nil {
 		return
 	}
@@ -41,9 +41,9 @@ func (JwtLogic *JwtLogic) SetRedisJWT(jwt string, userName string) (err error) {
 }
 
 func LoadAllJwt() {
-	if global.DB.Migrator().HasTable(&models.JwtBlackList{}) {
+	if global.MysqlDB.Migrator().HasTable(&models.JwtBlackList{}) {
 		var data []string
-		err := global.DB.Model(&models.JwtBlackList{}).Select("jwt").Find(&data).Error
+		err := global.MysqlDB.Model(&models.JwtBlackList{}).Select("jwt").Find(&data).Error
 		if err != nil {
 			global.GetZapLog().Error("加载数据库jwt黑名单失败", zap.Error(err))
 		}

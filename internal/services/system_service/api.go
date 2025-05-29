@@ -22,12 +22,12 @@ func NewApiLogic() *ApiLogic {
 
 func (self *ApiLogic) Add(ctx context.Context, params *request.UpsertApiReq) (err error) {
 	var has int64
-	global.DB.Model(&models.SysApis{}).Where("parent_id != ?", 0).Where("path = ?", params.Path).Count(&has)
+	global.MysqlDB.Model(&models.SysApis{}).Where("parent_id != ?", 0).Where("path = ?", params.Path).Count(&has)
 	if has > 0 {
 		return fmt.Errorf("API已存在！")
 	}
 
-	err = global.DB.Create(&models.SysApis{
+	err = global.MysqlDB.Create(&models.SysApis{
 		ParentId:    params.ParentId,
 		Description: params.Description,
 		Method:      params.Method,
@@ -39,7 +39,7 @@ func (self *ApiLogic) Add(ctx context.Context, params *request.UpsertApiReq) (er
 
 func (self *ApiLogic) List(ctx context.Context, params *request.ApiListReq) (resp *request.ApiListResp, err error) {
 	resp = &request.ApiListResp{}
-	query := global.DB.Model(&models.SysApis{})
+	query := global.MysqlDB.Model(&models.SysApis{})
 	if params.Description != "" {
 		query.Where("description like ?", params.Description+"%")
 	}
@@ -80,12 +80,12 @@ func (self *ApiLogic) List(ctx context.Context, params *request.ApiListReq) (res
 
 func (self *ApiLogic) Update(ctx context.Context, id int64, params *request.UpsertApiReq) (err error) {
 	var has int64
-	global.DB.Model(&models.SysApis{}).Where("parent_id != ?", 0).Where("path = ?", params.Path).Count(&has)
+	global.MysqlDB.Model(&models.SysApis{}).Where("parent_id != ?", 0).Where("path = ?", params.Path).Count(&has)
 	if has > 0 {
 		return fmt.Errorf("API已存在！")
 	}
 
-	err = global.DB.Model(&models.SysApis{}).Where("id = ?", id).
+	err = global.MysqlDB.Model(&models.SysApis{}).Where("id = ?", id).
 		Updates(map[string]interface{}{
 			"parent_id":   params.ParentId,
 			"description": params.Description,
@@ -98,19 +98,19 @@ func (self *ApiLogic) Update(ctx context.Context, id int64, params *request.Upse
 
 func (self *ApiLogic) Delete(ctx context.Context, id int64) (err error) {
 	var count int64
-	global.DB.Where("api_id", id).Model(&models.SysRoleApis{}).Count(&count)
+	global.MysqlDB.Where("api_id", id).Model(&models.SysRoleApis{}).Count(&count)
 	if count > 0 {
 		return fmt.Errorf("请先删除角色API权限后再操作")
 	}
 
-	err = global.DB.Delete(&models.SysApis{}, "id = ?", id).Error
+	err = global.MysqlDB.Delete(&models.SysApis{}, "id = ?", id).Error
 
 	return
 }
 
 func (self *ApiLogic) CacheApiInfo() {
 	var list []*models.SysApis
-	if err := global.DB.Model(&models.SysApis{}).Find(&list).Error; err != nil {
+	if err := global.MysqlDB.Model(&models.SysApis{}).Find(&list).Error; err != nil {
 		//gina.Log.Error("[CacheApiInfo]获取API信息失败！", zap.Error(err))
 		return
 	}

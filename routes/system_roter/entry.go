@@ -2,15 +2,18 @@ package system_roter
 
 import "github.com/gin-gonic/gin"
 
-func InitSystemRouter(Router *gin.RouterGroup) {
-	InitApiRouter(Router)
-	InitDictRouter(Router)
-	InitOperateRecordRouter(Router)
-	InitRoleRouter(Router)
-	InitMenuRouter(Router)
-	InitUserRouter(Router)
+func InitSystemRouter(PrivateGroup *gin.RouterGroup) {
+	InitApiRouter(PrivateGroup)
+	InitDictRouter(PrivateGroup)
+	InitOperateRecordRouter(PrivateGroup)
+	InitRoleRouter(PrivateGroup)
+	InitMenuRouter(PrivateGroup)
+	InitUserRouter(PrivateGroup)
+
+	InitPrivateAuthRouter(PrivateGroup)
+
 }
 
-func InitPublicRouter(Router *gin.RouterGroup) {
-	InitAuthRouter(Router)
+func InitPublicRouter(PublicGroup *gin.RouterGroup) {
+	InitPublicAuthRouter(PublicGroup)
 }

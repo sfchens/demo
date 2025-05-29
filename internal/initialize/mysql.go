@@ -16,17 +16,17 @@ func Gorm() *gorm.DB {
 	switch global.ConfigAll.Mysql.DbType {
 	case "mysql":
 		mysqlObj = gormMysql()
-		global.DB = mysqlObj
+		global.MysqlDB = mysqlObj
 	default:
 		mysqlObj = gormMysql()
-		global.DB = mysqlObj
+		global.MysqlDB = mysqlObj
 	}
 
 	// 初始化相关数据
 	if mysqlObj != nil {
 		RegisterTables(mysqlObj)
-		InitMysqlData(global.DB)
-		db, _ := global.DB.DB()
+		InitMysqlData(global.MysqlDB)
+		db, _ := global.MysqlDB.DB()
 		global.RegisterShutdownFunc(func() {
 			_ = db.Close()
 		})
@@ -77,7 +77,7 @@ func GormMysqlByConfig(m configs.Mysql) *gorm.DB {
 func RegisterTables(db *gorm.DB) {
 	err := db.AutoMigrate(
 		models.JwtBlackList{},
-		models.CasbinRule{},
+		models.CasbinRules{},
 		models.SysApis{},
 		models.SysDicts{},
 		models.SysMenus{},
@@ -86,6 +86,7 @@ func RegisterTables(db *gorm.DB) {
 		models.SysRoleApis{},
 		models.SysRoleAuths{},
 		models.SysUsers{},
+		models.SysUserRoles{},
 	)
 	if err != nil {
 		global.GetZapLog().Error("Register tables failed", zap.Error(err))

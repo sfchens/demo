@@ -84,7 +84,7 @@ func OperateRecord() gin.HandlerFunc {
 		respData, _ := json.Marshal(resp.Data)
 		record.Response = string(respData)
 
-		if err := global.DB.Create(&record).Error; err != nil {
+		if err := global.MysqlDB.Create(&record).Error; err != nil {
 			global.GetZapLog().Error("记录操作日志异常", zap.Error(err), zap.Any("record", record))
 		}
 	}

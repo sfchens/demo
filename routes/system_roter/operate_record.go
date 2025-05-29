@@ -5,10 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var recordApi = system_controller.NewRecordApi()
+
 func InitOperateRecordRouter(routerGroup *gin.RouterGroup) {
 	systemRecordGroup := routerGroup.Group("/record")
 	{
-		systemRecordGroup.GET("/list", system_controller.RecordList)
-		systemRecordGroup.DELETE("/delete/:id", system_controller.RecordDelete)
+		systemRecordGroup.GET("/list", recordApi.RecordList)
+		systemRecordGroup.DELETE("/delete/:id", recordApi.RecordDelete)
 	}
 }

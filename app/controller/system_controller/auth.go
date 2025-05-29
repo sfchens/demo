@@ -8,7 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthLogin(ctx *gin.Context) {
+type AuthApi struct{}
+
+func NewAuthApi() *AuthApi {
+	return &AuthApi{}
+}
+func (c *AuthApi) AuthLogin(ctx *gin.Context) {
 	var (
 		req request.LoginReq
 		res request.LoginResp
@@ -29,7 +34,7 @@ func AuthLogin(ctx *gin.Context) {
 	response.OkWithData(ctx, res)
 }
 
-func AuthLogout(ctx *gin.Context) {
+func (c *AuthApi) AuthLogout(ctx *gin.Context) {
 	var req request.LogoutReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -42,4 +47,15 @@ func AuthLogout(ctx *gin.Context) {
 	}
 
 	response.Ok(ctx)
+}
+
+func (c *AuthApi) AuthCodes(ctx *gin.Context) {
+
+	resp, err := system_service.NewAuthLogic().Codes(ctx)
+	if err != nil {
+		response.FailWithMessage(ctx, err.Error())
+		return
+	}
+
+	response.OkWithData(ctx, resp)
 }

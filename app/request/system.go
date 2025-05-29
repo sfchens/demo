@@ -266,7 +266,7 @@ type RoleInfoResp struct {
 	Sort      int64  `json:"sort"`
 	Remark    string `json:"remark"`
 	Status    int64  `json:"status"`
-	CreatedAt int64  `json:"createdAt"`
+	CreatedAt string `json:"createdAt"`
 	AuthId    []uint `json:"authId"`
 	ApiId     []uint `json:"apiId"`
 }

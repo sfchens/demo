@@ -8,7 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MenuRouter(ctx *gin.Context) {
+type MenuApi struct{}
+
+func NewMenuApi() *MenuApi {
+	return &MenuApi{}
+}
+
+func (c *MenuApi) MenuRouter(ctx *gin.Context) {
 	resp, err := system_service.NewMenuLogic().Router(ctx)
 	if err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -17,7 +23,7 @@ func MenuRouter(ctx *gin.Context) {
 	response.OkWithData(ctx, resp)
 }
 
-func MenuTree(ctx *gin.Context) {
+func (c *MenuApi) MenuTree(ctx *gin.Context) {
 	var req request.MenuTreeReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -33,7 +39,7 @@ func MenuTree(ctx *gin.Context) {
 	response.OkWithData(ctx, resp)
 }
 
-func MenuAdd(ctx *gin.Context) {
+func (c *MenuApi) MenuAdd(ctx *gin.Context) {
 	var req request.MenuInfo
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -48,7 +54,7 @@ func MenuAdd(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func MenuUpdate(ctx *gin.Context) {
+func (c *MenuApi) MenuUpdate(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")
@@ -67,7 +73,7 @@ func MenuUpdate(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func MenuInfo(ctx *gin.Context) {
+func (c *MenuApi) MenuInfo(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")
@@ -82,7 +88,7 @@ func MenuInfo(ctx *gin.Context) {
 	response.OkWithData(ctx, resp)
 }
 
-func MenuDelete(ctx *gin.Context) {
+func (c *MenuApi) MenuDelete(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")

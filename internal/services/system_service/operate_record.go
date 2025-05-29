@@ -19,7 +19,7 @@ func NewOperateRecordLogic() *OperateRecordLogic {
 func (self *OperateRecordLogic) List(ctx context.Context, params *request.RecordListReq) (resp *request.RecordListResp, err error) {
 	resp = &request.RecordListResp{}
 
-	query := global.DB.Model(&models.SysOperateRecords{}).Order("id desc")
+	query := global.MysqlDB.Model(&models.SysOperateRecords{}).Order("id desc")
 	if params.Username != "" {
 		query.Where("username like ?", params.Username+"%")
 	}
@@ -48,6 +48,6 @@ func (self *OperateRecordLogic) List(ctx context.Context, params *request.Record
 }
 
 func (self *OperateRecordLogic) Delete(ctx context.Context, id int64) (err error) {
-	err = global.DB.Delete(&models.SysOperateRecords{}, "id = ?", id).Error
+	err = global.MysqlDB.Delete(&models.SysOperateRecords{}, "id = ?", id).Error
 	return
 }

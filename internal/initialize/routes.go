@@ -21,12 +21,11 @@ func Routers() *gin.Engine {
 
 	// 公共API
 	PublicGroup := r.Group("")
-	routes.InitPublicRouter(PublicGroup)
 	// 私有API
 	PrivateGroup := r.Group("/api")
 	PrivateGroup.Use(middlewares.JwtAuth())
 	PrivateGroup.Use(middlewares.OperateRecord())
-	routes.InitPrivateRouter(PrivateGroup)
+	routes.InitRouter(PrivateGroup, PublicGroup)
 	return r
 }
 

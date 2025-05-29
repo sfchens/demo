@@ -7,6 +7,7 @@ import (
 	"demo/internal/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"time"
 
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
@@ -21,12 +22,12 @@ func NewRoleLogic() *RoleLogic {
 
 func (self *RoleLogic) Add(ctx context.Context, params *request.UpsertRoleReq) (err error) {
 	var has int64
-	global.DB.Model(&models.SysRoles{}).Where("code = ?", params.Code).Count(&has)
+	global.MysqlDB.Model(&models.SysRoles{}).Where("code = ?", params.Code).Count(&has)
 	if has > 0 {
 		return fmt.Errorf("角色已存在！")
 	}
 
-	err = global.DB.Create(&models.SysRoles{
+	err = global.MysqlDB.Create(&models.SysRoles{
 		Name:   params.Name,
 		Code:   params.Code,
 		Status: params.Status,
@@ -40,9 +41,9 @@ func (self *RoleLogic) Add(ctx context.Context, params *request.UpsertRoleReq) (
 func (self *RoleLogic) List(ctx context.Context, params *request.RoleListReq) (resp *request.RoleListResp, err error) {
 	resp = &request.RoleListResp{}
 
-	query := global.DB.Model(&models.SysRoles{}).Order("id asc")
+	query := global.MysqlDB.Model(&models.SysRoles{}).Order("id asc")
 	if params.Name != "" {
-		query.Where("name like ?", params.Name+"%")
+		query.Where("name like ?", "%"+params.Name+"%")
 	}
 	if params.Status > 0 {
 		query.Where("status = ?", params.Status)
@@ -60,7 +61,7 @@ func (self *RoleLogic) List(ctx context.Context, params *request.RoleListReq) (r
 	for _, info := range list {
 		item := new(request.RoleInfoResp)
 		_ = copier.Copy(item, info)
-		item.CreatedAt = info.CreatedAt.UnixMilli()
+		item.CreatedAt = info.CreatedAt.Format(time.RFC3339)
 		items = append(items, item)
 	}
 	resp.Items = items
@@ -69,7 +70,7 @@ func (self *RoleLogic) List(ctx context.Context, params *request.RoleListReq) (r
 }
 
 func (self *RoleLogic) Update(ctx context.Context, id uint, params *request.UpsertRoleReq) (err error) {
-	err = global.DB.Model(&models.SysRoles{}).Where("id = ?", id).
+	err = global.MysqlDB.Model(&models.SysRoles{}).Where("id = ?", id).
 		Updates(map[string]interface{}{
 			"name":   params.Name,
 			"code":   params.Code,
@@ -92,7 +93,7 @@ func (self *RoleLogic) deleteRoleAuth(ctx context.Context, tx *gorm.DB, id uint)
 }
 
 func (self *RoleLogic) Delete(ctx context.Context, id uint) (err error) {
-	err = global.DB.Transaction(func(tx *gorm.DB) error {
+	err = global.MysqlDB.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Delete(&models.SysRoles{}, "id = ?", id).Error; err != nil {
 			return err
 		}
@@ -109,8 +110,55 @@ type CasbinInfo struct {
 }
 
 func (self *RoleLogic) Assign(ctx context.Context, id uint, params *request.AssignRoleReq) (err error) {
+
+	tx := global.MysqlDB.Begin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		tx.Commit()
+	}()
+
+	// 保存菜单权限
+	var roleAuths []models.SysRoleAuths
+	for _, authId := range params.AuthId {
+		roleAuths = append(roleAuths, models.SysRoleAuths{
+			RoleId: id,
+			AuthId: authId,
+		})
+	}
+	if err = tx.Model(&models.SysRoleAuths{}).Create(&roleAuths).Error; err != nil {
+		return err
+	}
+
+	// 保存接口权限
+	var apis []models.SysApis
+	if err = tx.Model(&models.SysApis{}).Where("id in ?", params.ApiId).Find(&apis).Error; err != nil {
+		return err
+	}
+	var roleApis []models.SysRoleApis
+	for _, api := range apis {
+		roleApis = append(roleApis, models.SysRoleApis{
+			RoleId: id,
+			ApiId:  api.ID,
+		})
+
+		//if api.Path != "" {
+		//	casbinInfos = append(casbinInfos, CasbinInfo{
+		//		Path:   api.Path,
+		//		Method: api.Method,
+		//	})
+		//}
+	}
+
+	err = tx.Create(&roleApis).Error
+	if err != nil {
+		return
+	}
+
 	//var casbinInfos []CasbinInfo
-	//err = global.DB.Transaction(func(tx *gorm.DB) error {
+	//err = global.MysqlDB.Transaction(func(tx *gorm.DB) error {
 	//	if err = self.deleteRoleAuth(ctx, tx, id); err != nil {
 	//		return err
 	//	}
@@ -162,7 +210,7 @@ func (self *RoleLogic) Assign(ctx context.Context, id uint, params *request.Assi
 
 func (self *RoleLogic) Info(ctx *gin.Context, id uint) (resp *request.RoleInfoResp, err error) {
 	role := &models.SysRoles{}
-	if err = global.DB.Preload("RoleAuths").Preload("RoleApis").First(&role, id).Error; err != nil {
+	if err = global.MysqlDB.Preload("RoleAuths").Preload("RoleApis").First(&role, id).Error; err != nil {
 		return
 	}
 

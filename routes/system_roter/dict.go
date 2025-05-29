@@ -5,12 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var dictApi = system_controller.NewDictApi()
+
 func InitDictRouter(routerGroup *gin.RouterGroup) {
 	systemDictGroup := routerGroup.Group("/dict")
 	{
-		systemDictGroup.POST("/add", system_controller.DictAdd)
-		systemDictGroup.GET("/list", system_controller.DictList)
-		systemDictGroup.PUT("/update/:id", system_controller.DictUpdate)
-		systemDictGroup.DELETE("/delete/:id", system_controller.DictDelete)
+		systemDictGroup.POST("/add", dictApi.DictAdd)
+		systemDictGroup.GET("/list", dictApi.DictList)
+		systemDictGroup.PUT("/update/:id", dictApi.DictUpdate)
+		systemDictGroup.DELETE("/delete/:id", dictApi.DictDelete)
 	}
 }

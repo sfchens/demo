@@ -8,7 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DictAdd(ctx *gin.Context) {
+type DictApi struct{}
+
+func NewDictApi() *DictApi {
+	return &DictApi{}
+}
+
+func (c *DictApi) DictAdd(ctx *gin.Context) {
 	var req request.UpsertDictReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -22,7 +28,7 @@ func DictAdd(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func DictList(ctx *gin.Context) {
+func (c *DictApi) DictList(ctx *gin.Context) {
 	var req request.DictListReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -38,7 +44,7 @@ func DictList(ctx *gin.Context) {
 	response.OkWithData(ctx, resp)
 }
 
-func DictUpdate(ctx *gin.Context) {
+func (c *DictApi) DictUpdate(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")
@@ -59,7 +65,7 @@ func DictUpdate(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func DictDelete(ctx *gin.Context) {
+func (c *DictApi) DictDelete(ctx *gin.Context) {
 	id := helper.StringToInt64(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")

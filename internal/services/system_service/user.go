@@ -25,13 +25,13 @@ func NewUserLogic() *UserLogic {
 func (self *UserLogic) Info(ctx *gin.Context) (resp *request.UserInfoResp, err error) {
 	user := models.SysUsers{}
 	id := jwt.GetUserID(ctx)
-	if err = global.DB.Where("id = ?", id).First(&user).Error; err != nil {
+	if err = global.MysqlDB.Where("id = ?", id).First(&user).Error; err != nil {
 		return
 	}
 
 	resp = new(request.UserInfoResp)
 	_ = copier.Copy(resp, user)
-	resp.RoleName = user.SysRole.Name
+	//resp.RoleName = user.SysRole.Name
 	resp.RealName = user.Username
 
 	// 获取角色信息
@@ -42,7 +42,7 @@ func (self *UserLogic) Info(ctx *gin.Context) (resp *request.UserInfoResp, err e
 
 	// 获取权限
 	var results []models.SysMenus
-	if err = global.DB.Model(&models.SysMenus{}).
+	if err = global.MysqlDB.Model(&models.SysMenus{}).
 		Select("perm").
 		Where("type = ?", "BUTTON").
 		Where("id IN ?", info.AuthId).
@@ -57,7 +57,7 @@ func (self *UserLogic) Info(ctx *gin.Context) (resp *request.UserInfoResp, err e
 
 func (self *UserLogic) UserByName(username string) (user models.SysUsers, err error) {
 	user = models.SysUsers{}
-	err = global.DB.Where("username = ?", username).First(&user).Error
+	err = global.MysqlDB.Where("username = ?", username).First(&user).Error
 	// todo 头像
 	// user.Avatar = utils.TransformImageUrl(user.Avatar)
 
@@ -74,7 +74,7 @@ func (self *UserLogic) Add(ctx *gin.Context, params *request.UpsertUserReq) (err
 		return fmt.Errorf("用户已存在！")
 	}
 
-	err = global.DB.Create(&models.SysUsers{
+	err = global.MysqlDB.Create(&models.SysUsers{
 		Username: username,
 		Password: utils.BcryptHash(params.Password),
 		Nickname: params.Nickname,
@@ -93,7 +93,7 @@ func (self *UserLogic) Add(ctx *gin.Context, params *request.UpsertUserReq) (err
 func (self *UserLogic) List(ctx context.Context, params *request.UserListReq) (resp *request.UserListResp, err error) {
 	resp = &request.UserListResp{}
 
-	query := global.DB.Model(&models.SysUsers{}).Order("id desc").Preload("SysRole")
+	query := global.MysqlDB.Model(&models.SysUsers{}).Order("id desc")
 	if params.Username != "" {
 		query.Where("username like ?", params.Username+"%")
 	}
@@ -113,7 +113,7 @@ func (self *UserLogic) List(ctx context.Context, params *request.UserListReq) (r
 	for _, info := range list {
 		item := new(request.UserInfoResp)
 		_ = copier.Copy(item, info)
-		item.RoleName = info.SysRole.Name
+		//item.RoleName = info.SysRole.Name
 		item.CreatedAt = info.CreatedAt.UnixMilli()
 		items = append(items, item)
 	}
@@ -124,13 +124,13 @@ func (self *UserLogic) List(ctx context.Context, params *request.UserListReq) (r
 
 func (self *UserLogic) Update(ctx context.Context, id int64, params *request.UpsertUserReq) (err error) {
 	user := models.SysUsers{}
-	if err = global.DB.First(&user, id).Error; err != nil {
+	if err = global.MysqlDB.First(&user, id).Error; err != nil {
 		return err
 	}
 
 	if user.Username != params.Username {
 		var count int64
-		global.DB.Model(&models.SysUsers{}).Where("username = ?", params.Username).Count(&count)
+		global.MysqlDB.Model(&models.SysUsers{}).Where("username = ?", params.Username).Count(&count)
 		if count >= 1 {
 			return errors.New("用户已存在")
 		}
@@ -152,17 +152,17 @@ func (self *UserLogic) Update(ctx context.Context, id int64, params *request.Ups
 		uMap["password"] = utils.BcryptHash(params.Password)
 	}
 
-	err = global.DB.Model(&models.SysUsers{}).Where("id = ?", id).Updates(uMap).Error
+	err = global.MysqlDB.Model(&models.SysUsers{}).Where("id = ?", id).Updates(uMap).Error
 
 	return
 }
 
 func (self *UserLogic) Delete(ctx context.Context, id int64) (err error) {
-	err = global.DB.Delete(&models.SysUsers{}, "id = ?", id).Error
+	err = global.MysqlDB.Delete(&models.SysUsers{}, "id = ?", id).Error
 	return
 }
 
 func (self *UserLogic) GetById(id uint) (user models.SysUsers, err error) {
-	err = global.DB.Where("id = ?", id).Limit(1).Find(&user).Error
+	err = global.MysqlDB.Where("id = ?", id).Limit(1).Find(&user).Error
 	return
 }

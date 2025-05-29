@@ -5,17 +5,21 @@ import (
 	"demo/internal/services/system_service"
 	"demo/utils/helper"
 	"demo/utils/response"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
-func RoleAdd(ctx *gin.Context) {
+type RoleApi struct{}
+
+func NewRoleApi() *RoleApi {
+	return &RoleApi{}
+}
+
+func (c *RoleApi) RoleAdd(ctx *gin.Context) {
 	var req request.UpsertRoleReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
 		return
 	}
-
 	if err := system_service.NewRoleLogic().Add(ctx, &req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
 		return
@@ -23,7 +27,7 @@ func RoleAdd(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func RoleList(ctx *gin.Context) {
+func (c *RoleApi) RoleList(ctx *gin.Context) {
 	var req request.RoleListReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
@@ -36,10 +40,9 @@ func RoleList(ctx *gin.Context) {
 		return
 	}
 	response.OkWithData(ctx, resp)
-
 }
 
-func RoleInfo(ctx *gin.Context) {
+func (c *RoleApi) RoleInfo(ctx *gin.Context) {
 	id := helper.StringToUint(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")
@@ -53,7 +56,7 @@ func RoleInfo(ctx *gin.Context) {
 	response.OkWithData(ctx, resp)
 }
 
-func RoleUpdate(ctx *gin.Context) {
+func (c *RoleApi) RoleUpdate(ctx *gin.Context) {
 	id := helper.StringToUint(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")
@@ -72,7 +75,7 @@ func RoleUpdate(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func RoleAssign(ctx *gin.Context) {
+func (c *RoleApi) RoleAssign(ctx *gin.Context) {
 	id := helper.StringToUint(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")
@@ -83,7 +86,6 @@ func RoleAssign(ctx *gin.Context) {
 		response.FailWithMessage(ctx, err.Error())
 		return
 	}
-	fmt.Printf("req: %+v\n", req)
 	if err := system_service.NewRoleLogic().Assign(ctx, id, &req); err != nil {
 		response.FailWithMessage(ctx, err.Error())
 		return
@@ -91,7 +93,7 @@ func RoleAssign(ctx *gin.Context) {
 	response.Ok(ctx)
 }
 
-func RoleDelete(ctx *gin.Context) {
+func (c *RoleApi) RoleDelete(ctx *gin.Context) {
 	id := helper.StringToUint(ctx.Param("id"))
 	if helper.IsValidNumber(id) == false {
 		response.FailWithMessage(ctx, "参数错误")

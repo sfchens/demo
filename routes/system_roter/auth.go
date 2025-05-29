@@ -5,10 +5,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitAuthRouter(routerGroup *gin.RouterGroup) {
-	systemAuthGroup := routerGroup.Group("/api/auth")
+var (
+	authApi = system_controller.NewAuthApi()
+)
+
+func InitPrivateAuthRouter(router *gin.RouterGroup) {
+	systemAuthGroup := router.Group("/auth")
 	{
-		systemAuthGroup.POST("/login", system_controller.AuthLogin)
-		systemAuthGroup.POST("/logout", system_controller.AuthLogout)
+		systemAuthGroup.GET("codes", authApi.AuthCodes)
+	}
+}
+
+func InitPublicAuthRouter(router *gin.RouterGroup) {
+	systemAuthGroup := router.Group("/api/auth")
+	{
+		systemAuthGroup.POST("/login", authApi.AuthLogin)
+		systemAuthGroup.POST("/logout", authApi.AuthLogout)
 	}
 }

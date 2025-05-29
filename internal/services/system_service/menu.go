@@ -18,7 +18,7 @@ func NewMenuLogic() *MenuLogic {
 
 func (self *MenuLogic) Router(ctx context.Context) (resp *request.MenuResp, err error) {
 	var authIds []int64
-	global.DB.Table("sys_users").
+	global.MysqlDB.Table("sys_users").
 		Select("sys_role_auths.auth_id").
 		Joins("JOIN sys_role_auths ON sys_users.role_id = sys_role_auths.role_id").
 		//Where("sys_users.id = ?", xauth.GetTokenData[int64](ctx, "id")).
@@ -29,7 +29,7 @@ func (self *MenuLogic) Router(ctx context.Context) (resp *request.MenuResp, err 
 	}
 
 	var list []*models.SysMenus
-	if err = global.DB.Model(&models.SysMenus{}).
+	if err = global.MysqlDB.Model(&models.SysMenus{}).
 		Where("status = ?", 1).
 		Where("id IN ?", authIds).
 		Where("type != ?", "BUTTON").
@@ -70,7 +70,7 @@ func (self *MenuLogic) getMenuRouter(menuList []*models.SysMenus, pid uint) (tre
 }
 
 func (self *MenuLogic) Tree(ctx context.Context, params *request.MenuTreeReq) (resp *request.MenuResp, err error) {
-	query := global.DB.Model(&models.SysMenus{})
+	query := global.MysqlDB.Model(&models.SysMenus{})
 	if params.Name != "" {
 		query.Where("name like ?", params.Name+"%")
 	}
@@ -101,13 +101,24 @@ func (self *MenuLogic) Add(ctx context.Context, params *request.MenuInfo) (err e
 	data := new(models.SysMenus)
 	_ = copier.Copy(data, params)
 	_ = copier.Copy(data, params.Meta)
-	err = global.DB.Model(&models.SysMenus{}).Create(data).Error
 
+	tx := global.MysqlDB.Begin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		tx.Commit()
+	}()
+	err = tx.Model(&models.SysMenus{}).Create(data).Error
+	if err != nil {
+		return
+	}
 	return
 }
 
 func (self *MenuLogic) Update(ctx context.Context, id int64, params *request.MenuInfo) (err error) {
-	err = global.DB.Model(&models.SysMenus{}).Where("id = ?", id).
+	err = global.MysqlDB.Model(&models.SysMenus{}).Where("id = ?", id).
 		Updates(map[string]interface{}{
 			"parent_id":             params.ParentId,
 			"path":                  params.Path,
@@ -138,11 +149,11 @@ func (self *MenuLogic) Info(ctx context.Context, id int64) (resp *request.MenuIn
 
 func (self *MenuLogic) Delete(ctx context.Context, id int64) (err error) {
 	var count int64
-	global.DB.Model(&models.SysRoleAuths{}).Where("auth_id", id).Count(&count)
+	global.MysqlDB.Model(&models.SysRoleAuths{}).Where("auth_id", id).Count(&count)
 	if count > 0 {
 		return fmt.Errorf("请删除角色菜单权限！")
 	}
-	err = global.DB.Delete(&models.SysMenus{}, "id = ?", id).Error
+	err = global.MysqlDB.Delete(&models.SysMenus{}, "id = ?", id).Error
 	if err != nil {
 		return
 	}
