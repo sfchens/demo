@@ -2,7 +2,7 @@ package models
 
 import (
 	"demo/global"
-	"demo/internal/libs"
+	"demo/internal/initialize/casbin"
 	"fmt"
 	"gorm.io/gorm"
 )
@@ -27,7 +27,7 @@ func (m *SysRoles) TableName() string {
 
 func (m *SysRoles) BeforeDelete(tx *gorm.DB) (err error) {
 	// 清除casbin用户与角色关联
-	if _, e := libs.NewCasbinLogic().DeleteRole(int(m.ID)); e != nil {
+	if _, e := casbin.NewCasbinLogic().DeleteRole(int(m.ID)); e != nil {
 		err = fmt.Errorf("清除casbin角色权限异常: <%s>", e.Error())
 	}
 	// 清除数据库中用户与角色的关联

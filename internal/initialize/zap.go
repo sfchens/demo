@@ -2,7 +2,7 @@ package initialize
 
 import (
 	"demo/global"
-	initLogger "demo/internal/initialize/logger"
+	"demo/internal/initialize/logger"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -27,7 +27,7 @@ func ZapLog(fileNames ...string) *zap.Logger {
 		fileName = global.DefaultLoggerKey
 	}
 
-	customZap := initLogger.NewZap()
+	customZap := internal.NewZap()
 	customZap.FileName = fileName
 	customZap.Level = global.ConfigAll.Zap.Level
 	customZap.Format = "console"

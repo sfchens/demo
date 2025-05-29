@@ -1,4 +1,4 @@
-package libs
+package casbin
 
 import (
 	"demo/global"
